@@ -23,6 +23,7 @@ export async function registerUserController(req, res) {
         }
         const salt = await bcrypt.genSalt(10)
         const hashedPassword = await bcrypt.hash(password, salt)
+
         const payload = {
             name,
             email,
@@ -31,7 +32,13 @@ export async function registerUserController(req, res) {
         const newuser = await UserModel.create(payload)
         const save = await newuser.save()
         
-
+        const verifyEmail = await sendEmail({
+            sendTo: email,
+            subject: 'Verify your email',
+            html: `<h1>Welcome to our platform, ${name}</h1>
+            <p>Please verify your email by clicking the link below</p>
+            <a href="http://localhost:3000/verify/${newuser._id}">Verify Email</a>`
+        })
         
     } catch (error) {
         return res.status(500).json({

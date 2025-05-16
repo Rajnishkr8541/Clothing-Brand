@@ -19,6 +19,7 @@ const sendEmail = async({sendTo, subject, html})=>{
        if (error) {
     return console.error({ error });
   }
+  return data;
    
     } catch (error) {
         console.log('Error sending email', error);
@@ -26,10 +27,4 @@ const sendEmail = async({sendTo, subject, html})=>{
     }
 }
 
-(async function () {
-  
-
-  
-
-  console.log({ data });
-})();
+export default sendEmail;
