@@ -1,5 +1,7 @@
 import UserModel from '../models/user.model.js';
-import bcrypt from 'bcrypt';
+import bcryptjs from 'bcryptjs';
+import verifyEmailTemplate from '../utils/verifyEmailTemplate.js';
+import sendEmail from '../config/sendEmail.js';
 
 export async function registerUserController(req, res) {
     try {
@@ -7,7 +9,7 @@ export async function registerUserController(req, res) {
 
         if (!name || !email || !password) {
             return res.status(400).json({
-                message: 'All fields are required',
+                message: 'provide Email, Name, and Password',
                 error: true,
                 success: false
             })
@@ -15,35 +17,44 @@ export async function registerUserController(req, res) {
 
         const user = await UserModel.findOne({email})
         if (user) {
-            return res.status(400).json({
+            return res.json({
                 message: 'User already exists',
                 error: true,
-                success: false
+                success: false,
             })
         }
-        const salt = await bcrypt.genSalt(10)
-        const hashedPassword = await bcrypt.hash(password, salt)
+        const salt = await bcryptjs.genSalt(10)
+        const hashPassword = await bcryptjs.hash(password, salt)
 
         const payload = {
             name,
             email,
-            password: hashedPassword
+            password: hashPassword
         }
-        const newuser = await UserModel.create(payload)
-        const save = await newuser.save()
+        const newUser = await UserModel(payload)
+        const save = await newUser.save()
+
+        const verifyEmailUrl= `${process.env.FRONTEND_URL}/verify-email?code=${save._id}`
         
         const verifyEmail = await sendEmail({
             sendTo: email,
             subject: 'Verify your email',
-            html: `<h1>Welcome to our platform, ${name}</h1>
-            <p>Please verify your email by clicking the link below</p>
-            <a href="http://localhost:3000/verify/${newuser._id}">Verify Email</a>`
+            html: verifyEmailTemplate({
+                name,
+                url: verifyEmailUrl
+            } )
+        })
+
+        return res.json({
+            message: 'User created successfully',
+            error: false,
+            success: true,
+            data: save
         })
         
     } catch (error) {
         return res.status(500).json({
-            message: 'Internal server error',
-            error: error.message,
+            message: error.message,
             error: true,
             success: false
         })
