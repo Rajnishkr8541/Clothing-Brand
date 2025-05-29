@@ -5,5 +5,5 @@ const verifyEmailTemplate = ({name, url}) => {
              <a href= ${url} style="color:white; background:green" margin-top:10px > Verify Email</a>
 
     `;
-};
+}
 export default verifyEmailTemplate;

@@ -7,3 +7,4 @@ userRouter.post('/register',registerUserController)
 
 
 export default userRouter;
+ 

@@ -34,7 +34,7 @@ export async function registerUserController(req, res) {
         const newUser = await UserModel(payload)
         const save = await newUser.save()
 
-        const verifyEmailUrl= `${process.env.FRONTEND_URL}/verify-email?code=${save._id}`
+        const verifyEmailUrl= `${process.env.FRONTEND_URL}/verify-email?code=${save?._id}`
         
         const verifyEmail = await sendEmail({
             sendTo: email,
@@ -46,7 +46,7 @@ export async function registerUserController(req, res) {
         })
 
         return res.json({
-            message: 'User created successfully',
+            message: 'User Created Successfully',
             error: false,
             success: true,
             data: save
