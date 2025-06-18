@@ -5,7 +5,7 @@ import sendEmail from "../config/sendEmail.js";
 import generatedRefreshToken from "../utils/generatedRefreshToken.js";
 import generatedAccessToken from "../utils/generatedAccessToken.js";
 
-console.log("✅ UserModel loaded:", typeof UserModel);
+console.log("UserModel loaded:", typeof UserModel);
 
 export async function registerUserController(req, res) {
   try {
@@ -164,11 +164,41 @@ export async function loginController(req, res) {
       },
     });
   } catch (error) {
-    console.error("🔥 Login Error:", error); 
+    console.error("Login Error:", error); 
     return res.status(500).json({
       message: error.message || error,
       error: true,
       success: false,
     });
+  }
+}
+
+//LOGOUT CONTROLLER
+export async function logoutController(req,res){
+
+  
+  try {
+    const cookiesOption = {
+      httpOnly: true,
+      secure: true,
+      sameSite: "None",
+    };
+    res.clearCookie("accessToken",cookiesOption)
+    res.clearCookie("refreshToken",cookiesOption)
+
+    return res.json({
+      message: "Logout Scuccessfully",
+      error: false,
+      success: true,     
+    })
+    
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+
+    });
+
   }
 }
