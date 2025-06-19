@@ -148,7 +148,7 @@ export async function loginController(req, res) {
 
     const cookiesOption = {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: "None",
     };
     res.cookie("accessToken", accesstoken, cookiesOption);
@@ -176,15 +176,23 @@ export async function loginController(req, res) {
 //LOGOUT CONTROLLER
 export async function logoutController(req,res){
 
+
   
   try {
+
+    const userid = req.userId; //middleware  
+
     const cookiesOption = {
       httpOnly: true,
-      secure: true,
+      secure: false,
       sameSite: "None",
     };
     res.clearCookie("accessToken",cookiesOption)
     res.clearCookie("refreshToken",cookiesOption)
+
+    const removeRefreshToken = await UserModel.findByIdAndUpdate(userid,{
+      refresh_token: "",
+    })
 
     return res.json({
       message: "Logout Scuccessfully",
