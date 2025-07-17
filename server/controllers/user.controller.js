@@ -222,15 +222,16 @@ export async function uploadAvatar(req,res){
 
     const updateUser = await UserModel.findByIdAndUpdate(userId,{
       avatar: upload.url,
-      
-
     })
+
 
     return res.json({
       message: "Image Uploaded Sucessfully",
-      error: false,
-      success: true,
-      data: upload
+      data: {
+        _id : userId,
+        avatar : upload.url,
+      }
+
     })
 
     
