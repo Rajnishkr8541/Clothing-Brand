@@ -4,6 +4,7 @@ import verifyEmailTemplate from "../utils/verifyEmailTemplate.js";
 import sendEmail from "../config/sendEmail.js";
 import generatedRefreshToken from "../utils/generatedRefreshToken.js";
 import generatedAccessToken from "../utils/generatedAccessToken.js";
+import uploadImageCloudinary from "../utils/uploadImageCloudinary.js";
 
 console.log("UserModel loaded:", typeof UserModel);
 
@@ -209,4 +210,37 @@ export async function logoutController(req,res){
     });
 
   }
+}
+
+//UPLOAD USER IMAGE
+export async function uploadAvatar(req,res){
+
+  try {
+    const userId = req.userId;
+    const image = req.file;
+    const upload = await uploadImageCloudinary(image);
+
+    const updateUser = await UserModel.findByIdAndUpdate(userId,{
+      avatar: upload.url,
+      
+
+    })
+
+    return res.json({
+      message: "Image Uploaded Sucessfully",
+      error: false,
+      success: true,
+      data: upload
+    })
+
+    
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message || error,
+      error: true,
+      success: false,
+    })
+    
+  }
+
 }
