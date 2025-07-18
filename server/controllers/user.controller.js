@@ -253,14 +253,26 @@ export async function updateUserDetails(req, res){
 
     const {name, email, mobile, password} = req.body;
 
+    let hashPassword ="";
+
+    if(password){
+      const salt = await bcryptjs.genSalt(10);
+     const hashPassword = await bcryptjs.hash(password, salt);
+    }
+
     const updateUser = await UserModel.findByIdAndUpdate(userId,{
        ...(name && { name: name }),
        ...(email && { email: email }),
        ...(mobile && { mobile : mobile }),
-       ...UserModel(password && {
-        password: await bcryptjs.hash(passsword, 10)
-       })
+       ...(password && { password : hashPassword})
 
+    })
+
+    return res.json({
+      message: "User Details Updated Successfully",
+      error: false,
+      success: true,
+      data: updateUser
     })
     
   } catch (error) {
