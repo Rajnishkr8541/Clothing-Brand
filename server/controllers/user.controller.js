@@ -245,3 +245,29 @@ export async function uploadAvatar(req,res){
   }
 
 }
+
+//UPDATE USER PROFILE
+export async function updateUserDetails(req, res){
+  try {
+    const userId = req.userId; // auth middleware
+
+    const {name, email, mobile, password} = req.body;
+
+    const updateUser = await UserModel.findByIdAndUpdate(userId,{
+       ...(name && { name: name }),
+       ...(email && { email: email }),
+       ...(mobile && { mobile : mobile }),
+       ...UserModel(password && {
+        password: await bcryptjs.hash(passsword, 10)
+       })
+
+    })
+    
+  } catch (error) {
+    return res.status(500).json({
+      message: error.message || error,
+      error : true,
+      success: false
+    })
+  }
+}
